@@ -22,6 +22,7 @@ add_custom_command(
 	COMMAND $<TARGET_FILE:qjsc> -o ${CMAKE_SOURCE_DIR}/bundle/c/app.bundle.c ${CMAKE_SOURCE_DIR}/bundle/js/app.bundle.js
 	DEPENDS qjsc ${CMAKE_SOURCE_DIR}/bundle/js/app.bundle.js
 	COMMENT "Using qjsc to compile app.bundle.js"
+	VERBATIM
 )
 
 add_custom_target(gen_app_bundle_c ALL

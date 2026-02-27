@@ -63,12 +63,12 @@ jobs:
         run: |
           git clone https://github.com/Microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.bat
-          ./vcpkg/vcpkg install --classic curl:x64-windows curl:x86-windows curl:arm64-windows
+          ./vcpkg/vcpkg install --classic --recurse curl:x64-windows curl:x86-windows curl:arm64-windows || ./vcpkg/vcpkg install --classic --recurse curl:x64-windows curl:x86-windows curl:arm64-windows
 
       - name: Configure CMake (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          if [ "${{ runner.os }}" = "Darwin" ]; then
+          if [ "${{ runner.os }}" = "macOS" ]; then
             cmake --preset macos-gcc
             cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           elif [ "${{ matrix.config.arch }}" = "x86" ]; then
@@ -110,27 +110,27 @@ jobs:
           # Copy static library
           if [ "${{ runner.os }}" = "Windows" ]; then
             if [ "${{ matrix.build_type }}" = "Release" ]; then
-              cp build/Release/kugou_music_api.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
+              cp build/Release/kugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
             else
-              cp build/Debug/kugou_music_api.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp/build/libkugou_music_api.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
+              cp build/Debug/kugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
             fi
           else
-            cp build/libkugou_music_api.a $ARTIFACT_NAME/static/
+            cp build/libkugou_music_api_static.a $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api.a $ARTIFACT_NAME/static/
           fi
 
           # Copy shared library
           if [ "${{ runner.os }}" = "Windows" ]; then
             if [ "${{ matrix.build_type }}" = "Release" ]; then
-              cp build/Release/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp/build/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
+              cp build/Release/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
               cp build/Release/kugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/libkugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || true
             else
-              cp build/Debug/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp/build/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
+              cp build/Debug/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
               cp build/Debug/kugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/libkugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || true
             fi
-          elif [ "${{ runner.os }}" = "Darwin" ]; then
-            cp build/libkugou_music_api.dylib $ARTIFACT_NAME/shared/
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            cp build/libkugou_music_api.dylib $ARTIFACT_NAME/shared/ 2>/dev/null || true
           else
-            cp build/libkugou_music_api.so $ARTIFACT_NAME/shared/
+            cp build/libkugou_music_api.so $ARTIFACT_NAME/shared/ 2>/dev/null || true
           fi
 
           # Copy headers
