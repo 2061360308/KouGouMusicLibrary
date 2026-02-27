@@ -18,6 +18,42 @@
         "CMAKE_CXX_FLAGS_RELEASE": "/O2",
         "CMAKE_C_FLAGS_RELEASE": "/O2"
       }
+    },
+    {
+      "name": "linux-gcc",
+      "displayName": "Linux with GCC",
+      "description": "Configure using GCC on Linux",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS": "-O2 -Wall",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "linux-gcc-debug",
+      "displayName": "Linux with GCC (Debug)",
+      "description": "Configure using GCC on Linux (Debug)",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS": "-g -Wall -Wextra",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "macos-gcc",
+      "displayName": "macOS with GCC/Clang",
+      "description": "Configure using GCC/Clang on macOS",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS": "-O2 -Wall",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -32,6 +68,21 @@
       "displayName": "Build Debug (x64-windows, vcpkg)",
       "configurePreset": "x64-windows-vcpkg",
       "configuration": "Debug"
+    },
+    {
+      "name": "linux-gcc-Release",
+      "displayName": "Build Release (Linux, GCC)",
+      "configurePreset": "linux-gcc"
+    },
+    {
+      "name": "linux-gcc-Debug",
+      "displayName": "Build Debug (Linux, GCC)",
+      "configurePreset": "linux-gcc-debug"
+    },
+    {
+      "name": "macos-gcc-Release",
+      "displayName": "Build Release (macOS, GCC/Clang)",
+      "configurePreset": "macos-gcc"
     }
   ]
 }

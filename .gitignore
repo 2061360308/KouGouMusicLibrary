@@ -11,5 +11,8 @@ bundle/
 # node
 node_modules/
 
+# pnpm
+.pnpm-store/
+
 # vcpkg
 vcpkg_installed/

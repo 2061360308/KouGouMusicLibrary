@@ -36,19 +36,53 @@ add_library(kugou_music_api STATIC
 	${CMAKE_SOURCE_DIR}/bundle/c/app.bundle.c
 )
 
+add_library(kugou_music_api SHARED
+	${CMAKE_SOURCE_DIR}/src/c/main.c
+	${CMAKE_SOURCE_DIR}/src/c/http.c
+	${CMAKE_SOURCE_DIR}/src/c/tinycthread.c
+	${CMAKE_SOURCE_DIR}/src/c/kugou_music_api.c
+	${CMAKE_SOURCE_DIR}/bundle/c/app.bundle.c
+)
+
+# Windows 动态库导出宏
+if(WIN32)
+	target_compile_definitions(kugou_music_api PRIVATE KUGOU_MUSIC_API_EXPORTS)
+endif()
+
 target_include_directories(kugou_music_api
 	PRIVATE
 		${CMAKE_SOURCE_DIR}/quickjs
 		${CMAKE_SOURCE_DIR}/src/include
 )
+
+target_include_directories(kugou_music_api_shared
+	PRIVATE
+		${CMAKE_SOURCE_DIR}/quickjs
+		${CMAKE_SOURCE_DIR}/src/include
+)
+
 # 链接 quickjs 提供的静态库，解决 JS_* 符号
 target_link_libraries(kugou_music_api PRIVATE qjs qjs-libc)
+target_link_libraries(kugou_music_api SHARED PRIVATE qjs qjs-libc)
 
-# 告诉 CMake 在 vcpkg_installed 中查找包的 Config.cmake
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows")
+# 告诉 CMake 在 vcpkg_installed 中查找包的 Config.cmake (Windows only)
+if(WIN32)
+	list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows")
+endif()
 
-find_package(CURL CONFIG REQUIRED)
-target_link_libraries(kugou_music_api PRIVATE CURL::libcurl)
+# Linux/Unix 使用 pkg-config 查找，Windows 使用 CONFIG 模式
+if(UNIX)
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(CURL REQUIRED libcurl)
+	target_include_directories(kugou_music_api PRIVATE ${CURL_INCLUDE_DIRS})
+	target_include_directories(kugou_music_api_shared PRIVATE ${CURL_INCLUDE_DIRS})
+	target_link_libraries(kugou_music_api PRIVATE ${CURL_LIBRARIES})
+	target_link_libraries(kugou_music_api SHARED PRIVATE ${CURL_LIBRARIES})
+else()
+	find_package(CURL CONFIG REQUIRED)
+	target_link_libraries(kugou_music_api PRIVATE CURL::libcurl)
+	target_link_libraries(kugou_music_api SHARED PRIVATE CURL::libcurl)
+endif()
 
 # 通过 vcpkg 安装的 libuv（Config 模式）
 # find_package(libuv CONFIG REQUIRED)
