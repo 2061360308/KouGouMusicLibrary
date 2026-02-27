@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "x64-windows-vcpkg",
+      "displayName": "x64-windows with vcpkg",
+      "description": "Configure using vcpkg toolchain and x64-windows triplet",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "CMAKE_CXX_FLAGS_RELEASE": "/O2",
+        "CMAKE_C_FLAGS_RELEASE": "/O2"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-windows-vcpkg-Release",
+      "displayName": "Build Release (x64-windows, vcpkg)",
+      "configurePreset": "x64-windows-vcpkg",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-windows-vcpkg-Debug",
+      "displayName": "Build Debug (x64-windows, vcpkg)",
+      "configurePreset": "x64-windows-vcpkg",
+      "configuration": "Debug"
+    }
+  ]
+}
