@@ -28,7 +28,7 @@ add_custom_target(gen_app_bundle_c ALL
 	DEPENDS ${CMAKE_SOURCE_DIR}/bundle/c/app.bundle.c
 )
 
-add_library(kugou_music_api STATIC
+add_library(kugou_music_api_static STATIC
 	${CMAKE_SOURCE_DIR}/src/c/main.c
 	${CMAKE_SOURCE_DIR}/src/c/http.c
 	${CMAKE_SOURCE_DIR}/src/c/tinycthread.c
@@ -49,21 +49,21 @@ if(WIN32)
 	target_compile_definitions(kugou_music_api PRIVATE KUGOU_MUSIC_API_EXPORTS)
 endif()
 
+target_include_directories(kugou_music_api_static
+	PRIVATE
+		${CMAKE_SOURCE_DIR}/quickjs
+		${CMAKE_SOURCE_DIR}/src/include
+)
+
 target_include_directories(kugou_music_api
 	PRIVATE
 		${CMAKE_SOURCE_DIR}/quickjs
 		${CMAKE_SOURCE_DIR}/src/include
 )
 
-target_include_directories(kugou_music_api_shared
-	PRIVATE
-		${CMAKE_SOURCE_DIR}/quickjs
-		${CMAKE_SOURCE_DIR}/src/include
-)
-
 # 链接 quickjs 提供的静态库，解决 JS_* 符号
+target_link_libraries(kugou_music_api_static PRIVATE qjs qjs-libc)
 target_link_libraries(kugou_music_api PRIVATE qjs qjs-libc)
-target_link_libraries(kugou_music_api SHARED PRIVATE qjs qjs-libc)
 
 # 告诉 CMake 在 vcpkg_installed 中查找包的 Config.cmake (Windows only)
 if(WIN32)
@@ -76,12 +76,12 @@ if(UNIX)
 	pkg_check_modules(CURL REQUIRED libcurl)
 	target_include_directories(kugou_music_api PRIVATE ${CURL_INCLUDE_DIRS})
 	target_include_directories(kugou_music_api_shared PRIVATE ${CURL_INCLUDE_DIRS})
+	target_link_libraries(kugou_music_api_static PRIVATE ${CURL_LIBRARIES})
 	target_link_libraries(kugou_music_api PRIVATE ${CURL_LIBRARIES})
-	target_link_libraries(kugou_music_api SHARED PRIVATE ${CURL_LIBRARIES})
 else()
 	find_package(CURL CONFIG REQUIRED)
+	target_link_libraries(kugou_music_api_static PRIVATE CURL::libcurl)
 	target_link_libraries(kugou_music_api PRIVATE CURL::libcurl)
-	target_link_libraries(kugou_music_api SHARED PRIVATE CURL::libcurl)
 endif()
 
 # 通过 vcpkg 安装的 libuv（Config 模式）
@@ -95,4 +95,4 @@ target_include_directories(test
 	PRIVATE
 		${CMAKE_SOURCE_DIR}/src/include
 )
-target_link_libraries(test PRIVATE kugou_music_api)
+target_link_libraries(test PRIVATE kugou_music_api_static)
