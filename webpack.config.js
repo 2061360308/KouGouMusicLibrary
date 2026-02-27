@@ -27,7 +27,7 @@ async function generateStaticModules(
       const identifier = fileName.split(".").shift();
       const route = parseRoute(fileName);
       const modulePath =
-        "@kuGouMucisApi/" +
+        "@kuGouMusicApi/" +
         path.join(path.basename(modulesPath), fileName).replace(/\\/g, "/");
       return { identifier, route, modulePath };
     });
@@ -90,7 +90,7 @@ async function generateStaticModules(
 }
 
 (async () => {
-  const modulesPath = path.join(__dirname, "KuGouMucisApi/module");
+  const modulesPath = path.join(__dirname, "KuGouMusicApi/module");
   const outputPath = [
     path.join(__dirname, "src/js/modulesDefinitions.js"),
     path.join(__dirname, "src/include/kugou_music_api.h"),
@@ -116,11 +116,11 @@ module.exports = {
     alias: {
       // 劫持 axios
       axios: path.resolve(__dirname, "src/js/axios_bridge.js"),
-      "@kuGouMucisApi": path.resolve(__dirname, "KuGouMucisApi"),
+      "@kuGouMusicApi": path.resolve(__dirname, "KuGouMusicApi"),
     },
     modules: [
       path.resolve(__dirname, "src/js"),
-      path.resolve(__dirname, "KuGouMucisApi"),
+      path.resolve(__dirname, "KuGouMusicApi"),
       "node_modules",
     ],
   },

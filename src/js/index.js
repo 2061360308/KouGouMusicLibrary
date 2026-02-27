@@ -1,6 +1,6 @@
-const { cookieToJson, randomString, getGuid, calculateMid } = require('@kuGouMucisApi/util/util');
-const { cryptoMd5 } = require('@kuGouMucisApi/util/crypto');
-const { createRequest } = require('@kuGouMucisApi/util/request');
+const { cookieToJson, randomString, getGuid, calculateMid } = require('@kuGouMusicApi/util/util');
+const { cryptoMd5 } = require('@kuGouMusicApi/util/crypto');
+const { createRequest } = require('@kuGouMusicApi/util/request');
 const moduleDefinitions = require('./modulesDefinitions'); // 由 webpack.config.js 生成的模块定义文件
 
 const guid = cryptoMd5(getGuid());

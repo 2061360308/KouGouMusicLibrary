@@ -241,7 +241,7 @@ char *ai_recommend(JSContext *ctx, const char *cookies, const char *params, Proc
 ## 项目结构
 
 ```bash
-kugouC/
+KouGouMusicLibrary/
 │
 ├─ node_modules/
 ├─ package.json
