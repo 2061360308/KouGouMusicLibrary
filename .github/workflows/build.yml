@@ -69,16 +69,14 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           if [ "${{ runner.os }}" = "macOS" ]; then
-            cmake --preset macos-gcc
-            cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-O2 -Wall" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           elif [ "${{ matrix.config.arch }}" = "x86" ]; then
             cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
           elif [ "${{ matrix.config.arch }}" = "arm64" ]; then
             sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
             cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++
           else
-            cmake --preset linux-gcc
-            cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-O2 -Wall" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           fi
 
       - name: Configure CMake (Windows)
@@ -88,44 +86,45 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.config.arch }}" = "x86" ]; then
-            cmake -B build -G "Visual Studio 17 2022" -A Win32 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x86-windows
+            cmake -B build-${{ matrix.config.arch }} -G "Visual Studio 17 2022" -A Win32 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x86-windows
           elif [ "${{ matrix.config.arch }}" = "arm64" ]; then
-            cmake -B build -G "Visual Studio 17 2022" -A ARM64 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=arm64-windows
+            cmake -B build-${{ matrix.config.arch }} -G "Visual Studio 17 2022" -A ARM64 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=arm64-windows
           else
             cmake --preset x64-windows-vcpkg
-            cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
+            cmake -B build-${{ matrix.config.arch }} -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
           fi
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
         run: |
-          cmake --build build --config ${{ matrix.build_type }} -- /m
+          cmake --build build-${{ matrix.config.arch }} --config ${{ matrix.build_type }} -- /m
 
       - name: Prepare artifacts
         shell: bash
         run: |
           ARTIFACT_NAME="kugou_music_api-${{ matrix.config.name }}-${{ matrix.build_type }}"
+          BUILD_DIR="${{ runner.os == 'Windows' && 'build-' + matrix.config.arch || 'build' }}"
           mkdir -p $ARTIFACT_NAME/{static,shared,include}
 
           # Copy static library
           if [ "${{ runner.os }}" = "Windows" ]; then
             if [ "${{ matrix.build_type }}" = "Release" ]; then
-              cp build/Release/kugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
+              cp $BUILD_DIR/Release/kugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp $BUILD_DIR/libkugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
             else
-              cp build/Debug/kugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
+              cp $BUILD_DIR/Debug/kugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || cp $BUILD_DIR/libkugou_music_api_static.lib $ARTIFACT_NAME/static/ 2>/dev/null || true
             fi
           else
-            cp build/libkugou_music_api_static.a $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api.a $ARTIFACT_NAME/static/
+            cp build/libkugou_music_api_static.a $ARTIFACT_NAME/static/ 2>/dev/null || cp build/libkugou_music_api.a $ARTIFACT_NAME/static/ 2>/dev/null || true
           fi
 
           # Copy shared library
           if [ "${{ runner.os }}" = "Windows" ]; then
             if [ "${{ matrix.build_type }}" = "Release" ]; then
-              cp build/Release/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
-              cp build/Release/kugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/libkugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || true
+              cp $BUILD_DIR/Release/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp $BUILD_DIR/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
+              cp $BUILD_DIR/Release/kugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || cp $BUILD_DIR/libkugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || true
             else
-              cp build/Debug/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
-              cp build/Debug/kugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || cp build/libkugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || true
+              cp $BUILD_DIR/Debug/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || cp $BUILD_DIR/kugou_music_api.dll $ARTIFACT_NAME/shared/ 2>/dev/null || true
+              cp $BUILD_DIR/Debug/kugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || cp $BUILD_DIR/libkugou_music_api.lib $ARTIFACT_NAME/shared/ 2>/dev/null || true
             fi
           elif [ "${{ runner.os }}" = "macOS" ]; then
             cp build/libkugou_music_api.dylib $ARTIFACT_NAME/shared/ 2>/dev/null || true
