@@ -21,8 +21,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/lib)
 
 # ========== QuickJS ==========
-set(QJS_BUILD_LIBC ON)
-set(BUILD_SHARED_LIBS ON)
+# set(QJS_BUILD_LIBC ON)
+# set(BUILD_SHARED_LIBS ON)
 add_subdirectory(quickjs)
 
 # ========== 公共源文件 ==========
@@ -44,7 +44,7 @@ target_include_directories(kugou_music_api_config INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
     # $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(kugou_music_api_config INTERFACE qjs)
+target_link_libraries(kugou_music_api_config INTERFACE qjs qjs-libc)
 
 # ========== 平台相关依赖 ==========
 if(UNIX)
