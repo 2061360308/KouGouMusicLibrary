@@ -37,9 +37,11 @@ jobs:
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgDirectory: ${{ github.workspace }}/vcpkg
-
-      - name: Clean build directory
-        run: rm -rf build/windows/x64
+      
+      - name: Debug environment
+        run: |
+          echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg"
+          ls ${{ github.workspace }}
 
       - name: Configure CMake
         run: cmake --preset windows-x64-vcpkg
