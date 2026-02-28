@@ -38,6 +38,9 @@ jobs:
         with:
           vcpkgDirectory: ${{ github.workspace }}/vcpkg
 
+      - name: Clean build directory
+        run: rm -rf build/windows/x64
+
       - name: Configure CMake
         run: cmake --preset windows-x64-vcpkg
         env:
