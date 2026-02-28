@@ -39,7 +39,7 @@ jobs:
           vcpkgDirectory: ${{ github.workspace }}/vcpkg
 
       - name: Install vcpkg dependencies
-        run: vcpkg install libuv:x86-windows curl:x86-windows
+        run: vcpkg install --triplet x86-windows
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg
 
