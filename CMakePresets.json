@@ -27,7 +27,7 @@
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_TARGET_TRIPLET": "x86-windows",
         "CURL_FIND_VERSION_EXACT": "FALSE",
-        "CURL_FIND_VERSION": "8.11.0",
+        "CURL_FIND_VERSION": "8.18.0",
         "CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY": "TRUE"
       },
       "environment": {
