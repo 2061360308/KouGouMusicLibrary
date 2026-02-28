@@ -104,9 +104,9 @@ add_custom_command(TARGET kugou_music_api POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_SOURCE_DIR}/src/include/kugou_music_api.h
         ${CMAKE_INCLUDE_OUTPUT_DIRECTORY}/kugou_music_api.h
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qjs.dll
-        ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/qjs.dll
+    # COMMAND ${CMAKE_COMMAND} -E copy
+    #     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qjs.dll
+    #     ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/qjs.dll
     COMMENT "Copying kugou_music_api.h qjs.lib qjs.dll to include directory"
 )
 
