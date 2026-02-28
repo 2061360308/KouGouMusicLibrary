@@ -38,6 +38,11 @@ jobs:
         with:
           vcpkgDirectory: ${{ github.workspace }}/vcpkg
 
+      - name: Install vcpkg dependencies
+        run: vcpkg install libuv:x86-windows curl:x86-windows
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+
       - name: Configure CMake
         run: cmake --preset windows-x86-vcpkg
         env:

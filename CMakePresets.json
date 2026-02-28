@@ -25,7 +25,13 @@
       "binaryDir": "${sourceDir}/build/windows/x86/${presetName}",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x86-windows"
+        "VCPKG_TARGET_TRIPLET": "x86-windows",
+        "CURL_FIND_VERSION_EXACT": "FALSE",
+        "CURL_FIND_VERSION": "8.11.0",
+        "CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY": "TRUE"
+      },
+      "environment": {
+        "VCPKG_DEFAULT_TRIPLET": "x86-windows"
       }
     },
     {
@@ -53,32 +59,6 @@
       }
     },
     {
-      "name": "linux-x86-gcc",
-      "displayName": "Linux x86 with GCC",
-      "description": "Configure using GCC on Linux (x86, requires multilib)",
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/linux/x86/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS": "-O2 -Wall -m32",
-        "CMAKE_CXX_FLAGS": "-O2 -Wall -m32",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      }
-    },
-    {
-      "name": "linux-arm64-gcc",
-      "displayName": "Linux arm64 with GCC",
-      "description": "Configure using GCC on Linux (arm64)",
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/linux/arm64/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS": "-O2 -Wall",
-        "CMAKE_CXX_FLAGS": "-O2 -Wall",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      }
-    },
-    {
       "name": "linux-x64-gcc-debug",
       "displayName": "Linux x64 with GCC (Debug)",
       "description": "Configure using GCC on Linux x64 (Debug)",
@@ -89,21 +69,6 @@
         "CMAKE_C_FLAGS": "-g -Wall -Wextra",
         "CMAKE_CXX_FLAGS": "-g -Wall -Wextra"
       }
-    },
-    {
-      "name": "macos-arm64-clang",
-      "displayName": "macOS arm64 with Clang",
-      "description": "Configure using Clang on macOS (arm64)",
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/macos/arm64/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS": "-O2 -Wall",
-        "CMAKE_CXX_FLAGS": "-O2 -Wall",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
     }
   ],
   "buildPresets": [
@@ -113,44 +78,18 @@
       "configuration": "Release"
     },
     {
-      "name": "windows-x64-vcpkg-Debug",
-      "configurePreset": "windows-x64-vcpkg",
-      "configuration": "Debug"
-    },
-    {
       "name": "windows-x86-vcpkg-Release",
       "configurePreset": "windows-x86-vcpkg",
       "configuration": "Release"
-    },
-    {
-      "name": "windows-arm64-vcpkg-Release",
-      "configurePreset": "windows-arm64-vcpkg",
-      "configuration": "Release"
-    },
-    { "name": "linux-x64-gcc-Release", "configurePreset": "linux-x64-gcc" },
-    { "name": "linux-x64-gcc-Debug", "configurePreset": "linux-x64-gcc-debug" },
-    { "name": "linux-x86-gcc-Release", "configurePreset": "linux-x86-gcc" },
-    { "name": "linux-arm64-gcc-Release", "configurePreset": "linux-arm64-gcc" },
-    {
-      "name": "macos-arm64-clang-Release",
-      "configurePreset": "macos-arm64-clang"
     }
   ],
   "testPresets": [
     {
       "name": "linux-x64-gcc-Release",
       "configurePreset": "linux-x64-gcc",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "linux-x64-gcc-Debug",
-      "configurePreset": "linux-x64-gcc-debug",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "macos-arm64-clang-Release",
-      "configurePreset": "macos-arm64-clang",
-      "output": { "outputOnFailure": true }
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }
