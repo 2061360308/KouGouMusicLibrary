@@ -36,7 +36,7 @@
       "name": "windows-arm64-vcpkg",
       "displayName": "Windows arm64 with vcpkg",
       "description": "Configure using vcpkg toolchain and arm64-windows triplet",
-      "generator": "Visual Studio 18 2026",
+      "generator": "Visual Studio 17 2022",
       "binaryDir": "${sourceDir}/build/windows/arm64/${presetName}",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
