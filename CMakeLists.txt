@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(MusicLibrary VERSION 1.0.0 LANGUAGES C)
-
+add_definitions(-D_TTHREAD_USE_PTHREAD)
 if(WIN32)
     if(MSVC)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:8388608")
@@ -68,7 +68,7 @@ set(NCM_JS_VERSION "${NCM_JS_VERSION_MAJOR}.${NCM_JS_VERSION_MINOR}.${NCM_JS_VER
 set(ENGINE_LIB_SOURCES
     ${CMAKE_SOURCE_DIR}/src/c/engine.c
     ${CMAKE_SOURCE_DIR}/src/c/http.c
-    ${CMAKE_SOURCE_DIR}/src/c/tinycthread.c
+    #${CMAKE_SOURCE_DIR}/src/c/tinycthread.c
 )
 
 # ========== INTERFACE 库 - 存放公共配置 ==========
