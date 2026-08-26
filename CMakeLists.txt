@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(MusicLibrary VERSION 1.0.0 LANGUAGES C)
-
+add_definitions(-D_TTHREAD_USE_PTHREAD)
 if(WIN32)
     if(MSVC)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:8388608")
@@ -19,11 +19,8 @@ elseif(EXISTS("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmak
 endif()
 
 # ========== 编译选项 ==========
-if(CMAKE_C_STANDARD)
-    set(CMAKE_C_STANDARD 11)
-    set(CMAKE_C_STANDARD_REQUIRED ON)
-endif()
-
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 # ========== QuickJS ==========
 # set(QJS_BUILD_LIBC ON)
 # set(BUILD_SHARED_LIBS ON)
@@ -68,7 +65,7 @@ set(NCM_JS_VERSION "${NCM_JS_VERSION_MAJOR}.${NCM_JS_VERSION_MINOR}.${NCM_JS_VER
 set(ENGINE_LIB_SOURCES
     ${CMAKE_SOURCE_DIR}/src/c/engine.c
     ${CMAKE_SOURCE_DIR}/src/c/http.c
-    ${CMAKE_SOURCE_DIR}/src/c/tinycthread.c
+    #${CMAKE_SOURCE_DIR}/src/c/tinycthread.c
 )
 
 # ========== INTERFACE 库 - 存放公共配置 ==========
@@ -203,18 +200,20 @@ if(WIN32)
 endif()
 
 
-# ========== 测试可执行文件 ==========
-add_executable(test ${CMAKE_SOURCE_DIR}/src/c/test.c)
+# ========== 手动 host smoke test (不是 ctest test) ==========
+# 原始 executable 名字是 'test', 跟 CTest 的保留名冲突 (enable_testing() 后 'test' 是 CTest 内部用)。
+# 改名为 host_smoke_test, 跟 tests/NcmTests (GoogleTest, 由 MUSICLIBRARY_BUILD_TESTS 开启) 区分。
+add_executable(host_smoke_test ${CMAKE_SOURCE_DIR}/src/c/test.c)
 # if(WIN32)
-#     set_target_properties(test PROPERTIES
+#     set_target_properties(host_smoke_test PROPERTIES
 #         ENABLE_EXPORTS OFF
 #         LINK_FLAGS "/NOENTRY /NODEFAULTLIB /NOIMPLIB"
 #     )
 # endif()
-target_include_directories(test PUBLIC
+target_include_directories(host_smoke_test PUBLIC
     ${CMAKE_SOURCE_DIR}/src/include
 )
-target_link_libraries(test PRIVATE kugou_music_api_static ncm_music_api_static engine)
+target_link_libraries(host_smoke_test PRIVATE kugou_music_api_static ncm_music_api_static engine)
 
 
 # ========== 生成配置头文件 ==========
@@ -271,3 +270,14 @@ install(DIRECTORY ${CMAKE_INCLUDE_OUTPUT_DIRECTORY}/src/include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+# ========== Tests ==========
+# 只在显式打开 BUILD_TESTING 时才 build (默认 OFF,避免污染 release build)
+option(MUSICLIBRARY_BUILD_TESTS "Build host tests (console)" OFF)
+mark_as_advanced(MUSICLIBRARY_BUILD_TESTS)
+
+if(MUSICLIBRARY_BUILD_TESTS)
+    # 项目默认只 enable C (LANGUAGES C), 但 tests/ 需要 gTest (.cpp), 启用 CXX
+    enable_language(CXX)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

@@ -1,7 +1,3 @@
-#ifdef _WIN32
-#define __declspec(dllexport)
-#endif
-
 // #include "tool.h"
 #include "quickjs-libc.h"
 #include "quickjs.h"
@@ -9,7 +5,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include "tinycthread.h"
+#ifdef __APPLE__
+#include <pthread.h>
+typedef pthread_mutex_t mtx_t;
+#define mtx_plain 0
+#define MTX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
+#define mtx_init(m, type) pthread_mutex_init((m), NULL)
+#define mtx_lock(m) pthread_mutex_lock((m))
+#define mtx_unlock(m) pthread_mutex_unlock((m))
+#define mtx_destroy(m) pthread_mutex_destroy((m))
+#else
+#include <threads.h>
+#define MTX_INITIALIZER {0}
+#endif
 #include "engine.h"
 
 // 声明在 http.c 中实现的模块初始化函数
